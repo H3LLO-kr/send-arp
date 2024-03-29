@@ -17,10 +17,14 @@
 #include "arphdr.h"
 #include "mac.h"
 
+typedef struct s_info
+{
+	Mac		mac;
+	Ip		ip;
+} t_info;
 
 /*		_send-arp_func.cpp		*/
-int		_get_my_ip(char *ip, char *itf);
-int		_get_my_mac(char *mac);
+int		_get_my_mac(t_info *Info, char *ifc);
 int		_get_victim_mac(char *mac);
 
 #endif
