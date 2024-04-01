@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
 	t_info	Attacker;
 	char	*ifc = argv[1];
 
-	if (!_get_my_mac(&Attacker, ifc))
+	if (_get_my_mac(&Attacker, ifc))
 	{
 		printf("[Error] Couldn't get my mac and ip address\n");
 		return (-1);
@@ -29,18 +29,19 @@ int main(int argc, char* argv[]) {
 		pcap_t* handle = pcap_open_live(dev, 0, 0, 0, errbuf);
 		t_info Victim;
 		t_info Target;
+
 		if (handle == nullptr)
 		{
 			fprintf(stderr, "[Error] couldn't open device %s(%s)\n", dev, errbuf);
 			return -1;
 		}
 		
-		Victim.ip = Ip(argv[2 * i]);
-		Target.ip = Ip(argv[2 * i + 1]);
+		Victim.ip = Ip(argv[2 * i + 2]);
+		Target.ip = Ip(argv[2 * i + 3]);
 		_get_victim_mac(handle, &Victim, &Attacker);
-		Target.mac = Attacker.mac;
+		//Target.mac = Attacker.mac;
 
-		_send_arp_packet(handle, 1, Victim, Attacker, Victim, Target);
+		//_send_arp_packet(handle, 1, Victim, Attacker, Victim, Target);
 		pcap_close(handle);
 		
 	}

@@ -32,7 +32,7 @@ typedef struct s_info
 
 /*		_send-arp_func.cpp		*/
 int		_get_my_mac(t_info *Info, char *ifc);
-int		_get_victim_mac(char *mac);
+int		_get_victim_mac(pcap_t *handle, t_info *Victim, t_info *Attacker);
 int		_send_arp_packet(pcap *handle, int opcode, t_info Dest, t_info Src, t_info Sender, t_info Target);
 
 #endif
