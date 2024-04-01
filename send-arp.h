@@ -17,6 +17,13 @@
 #include "arphdr.h"
 #include "mac.h"
 
+#pragma pack(push, 1)
+struct EthArpPacket final
+{
+	EthHdr eth_;
+	ArpHdr arp_;
+};
+
 typedef struct s_info
 {
 	Mac		mac;
@@ -26,5 +33,6 @@ typedef struct s_info
 /*		_send-arp_func.cpp		*/
 int		_get_my_mac(t_info *Info, char *ifc);
 int		_get_victim_mac(char *mac);
+int		_send_arp_packet(pcap *handle, int opcode, t_info Dest, t_info Src, t_info Sender, t_info Target);
 
 #endif
